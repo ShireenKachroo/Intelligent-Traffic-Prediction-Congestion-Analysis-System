@@ -1,18 +1,29 @@
-from src.db.db_connection import get_connection
+import sqlite3
 
-conn = get_connection()
+# Connect to database
+conn = sqlite3.connect("traffic.db")   # replace with your database name
 cursor = conn.cursor()
 
-cursor.execute("SELECT COUNT(*) FROM traffic_data")
-print(cursor.fetchone())
+# Print all tables first
+cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+tables = cursor.fetchall()
 
-cursor.execute("SELECT * FROM traffic_data LIMIT 5;")
-print(cursor.fetchone())
+print("Tables in Database:")
+for table in tables:
+    print(table[0])
 
-cursor.execute("SELECT * FROM traffic_data WHERE hour = 8 LIMIT 10;")
-print(cursor.fetchone())
+# Print data from predictions table
+print("\nPredictions Table:\n")
 
-cursor.execute("SELECT holiday, AVG(traffic_volume) FROM traffic_data GROUP BY holiday;")
-print(cursor.fetchone())
+cursor.execute("SELECT * FROM predictions")
+rows = cursor.fetchall()
+
+# Print column names
+column_names = [description[0] for description in cursor.description]
+print(column_names)
+
+# Print rows
+for row in rows:
+    print(row)
 
 conn.close()
